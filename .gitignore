@@ -38,5 +38,4 @@ logs/
 # Environment
 .env
 .env.local
-requirements.txt
 images/*

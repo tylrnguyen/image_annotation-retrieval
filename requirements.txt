@@ -1,0 +1,11 @@
+dnspython==2.8.0
+faiss-cpu==1.13.2
+iniconfig==2.3.0
+numpy==2.4.4
+packaging==26.2
+pluggy==1.6.0
+Pygments==2.20.0
+pymongo==4.17.0
+pytest==9.0.3
+python-dotenv==1.2.2
+redis==7.4.0
