@@ -24,7 +24,6 @@ def simulate_object_detection(image_id, image_path):
 
     return objects
 
-
 def simulate_embedding(image_id, dimension=128):
     seed = int(hashlib.sha256(image_id.encode()).hexdigest(), 16) % (10**8)
     rng = random.Random(seed)

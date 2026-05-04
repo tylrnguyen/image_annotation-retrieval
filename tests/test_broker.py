@@ -1,26 +1,35 @@
-from app.broker import Broker
-from app.events import IMAGE_SUBMITTED, IMAGE_EVENTS_CHANNEL
 import time
 
-broker = Broker()
+from app.broker import Broker
+from app.events import IMAGE_SUBMITTED
 
-def handle_event(event):
-    print(f"Received event: {event}")
 
-# subscribe first
-broker.subscribe(IMAGE_EVENTS_CHANNEL, handle_event)
+def test_redis_pubsub_receives_message():
+    broker = Broker()
+    received = []
 
-time.sleep(1)  # give some time for the subscription to be set up
+    def handler(event):
+        received.append(event)
 
-# publish an event
-event_data = {
-    "event_id": "evt_1",
-    "topic": IMAGE_SUBMITTED,
-    "payload": {
-        "image_id": "img_123"
+    pubsub = broker.subscribe(IMAGE_SUBMITTED, handler)
+
+    time.sleep(0.5)
+
+    event = {
+        "event_id": "evt_test",
+        "topic": IMAGE_SUBMITTED,
+        "timestamp": "2026-05-04T00:00:00Z",
+        "payload": {
+            "image_id": "img_test"
+        }
     }
-}
 
-broker.publish(IMAGE_EVENTS_CHANNEL, event_data)
+    broker.publish(IMAGE_SUBMITTED, event)
 
-time.sleep(2)  # wait to ensure the event is received before the script exits
+    time.sleep(0.5)
+
+    assert len(received) == 1
+    assert received[0]["topic"] == IMAGE_SUBMITTED
+    assert received[0]["payload"]["image_id"] == "img_test"
+
+    pubsub.close()

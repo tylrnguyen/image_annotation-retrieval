@@ -3,10 +3,6 @@ INFERENCE_COMPLETED = "inference.completed"
 ANNOTATION_STORED = "annotation.stored"
 EMBEDDING_CREATED = "embedding.created"
 
-IMAGE_EVENTS_CHANNEL = "image_events"
-INFERENCE_EVENTS_CHANNEL = "inference_events"
-ANNOTATION_EVENTS_CHANNEL = "annotation_events"
-
 REQUIRED_EVENT_FIELDS = ["event_id", "topic", "timestamp", "payload"]
 
 

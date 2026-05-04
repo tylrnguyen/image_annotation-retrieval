@@ -14,10 +14,16 @@ class Broker:
         pubsub.subscribe(channel)
 
         def listen():
-            for message in pubsub.listen():
-                if message['type'] == 'message':
-                    data = json.loads(message['data'])
-                    callback(data)
+            try:
+                for message in pubsub.listen():
+                    if message["type"] == "message":
+                        data = json.loads(message["data"])
+                        callback(data)
+            except (redis.exceptions.ConnectionError, ValueError):
+                pass
+
 
         thread = threading.Thread(target=listen, daemon=True)
         thread.start()
+
+        return pubsub
