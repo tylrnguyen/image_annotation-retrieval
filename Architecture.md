@@ -1,39 +1,16 @@
-# Event Definitions
+# Event-Driven Image Annotation and Retrieval System Architecture
 
-## Shared Event Schema
-All events follow this structure:
+## System Overview
 
-- event_id: unique ID for the event
-- topic: semantic event type
-- timestamp: ISO-8601 creation time
-- payload: event-specific data
+This project implements an event-driven image annotation and retrieval pipeline.
 
-## Event 1: image.submitted
-- Publisher: CLI Service
-- Subscriber: Inference Service
-- Purpose: begin processing pipeline
+The system uses Redis Pub/Sub as the message bus. Services communicate by publishing and subscribing to events instead of calling each other directly.
 
-Payload:
-- image_id
-- path
-- source
+The current pipeline is:
 
-## Event 2: inference.completed
-- Publisher: Inference Service
-- Subscriber: Document Service
-- Purpose: pass simulated annotations forward
-
-Payload:
-- image_id
-- objects
-- model_version
-
-## Event 3: annotation.stored
-- Publisher: Document Service
-- Subscriber: downstream service or logger
-- Purpose: confirm annotation storage
-
-Payload:
-- image_id
-- status
-- document_id
+```text
+image.submitted
+  -> inference.completed
+  -> annotation.stored
+  -> embedding.created
+  -> vector indexed in FAISS
