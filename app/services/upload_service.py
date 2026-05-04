@@ -3,7 +3,7 @@ from uuid import uuid4
 from datetime import datetime, timezone
 
 from app.broker import Broker
-from app.events import IMAGE_SUBMITTED, IMAGE_EVENTS_CHANNEL
+from app.events import IMAGE_SUBMITTED
 
 broker = Broker()
 
@@ -27,6 +27,6 @@ def submit_image(image_path: str, source: str = "cli"):
         }
     }
 
-    broker.publish(IMAGE_EVENTS_CHANNEL, event)
+    broker.publish(IMAGE_SUBMITTED, event)
     print("Upload Service published:", event)
     return event

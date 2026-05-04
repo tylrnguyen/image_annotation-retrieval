@@ -1,11 +1,7 @@
 from datetime import datetime, timezone
 
 from app.broker import Broker
-from app.events import (
-    IMAGE_EVENTS_CHANNEL,
-    INFERENCE_EVENTS_CHANNEL,
-    INFERENCE_COMPLETED,
-)
+from app.events import IMAGE_SUBMITTED, INFERENCE_COMPLETED, is_valid_event
 
 from app.simulation.image_processing import simulate_object_detection
 
@@ -35,9 +31,9 @@ def handle_image_submitted(event):
         }
     }
 
-    broker.publish(INFERENCE_EVENTS_CHANNEL, new_event)
+    broker.publish(INFERENCE_COMPLETED, new_event)
     print("Inference published:", new_event)
 
 def start():
-    broker.subscribe(IMAGE_EVENTS_CHANNEL, handle_image_submitted)
-    print("Inference Service is running and subscribed to image_events...")
+    broker.subscribe(IMAGE_SUBMITTED, handle_image_submitted)
+    print("Inference Service is running and subscribed to image.submitted...")
