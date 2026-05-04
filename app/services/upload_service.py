@@ -3,7 +3,7 @@ from uuid import uuid4
 from datetime import datetime, timezone
 
 from app.broker import Broker
-from app.events import IMAGE_SUBMITTED
+from app.events import IMAGE_SUBMITTED, IMAGE_EVENTS_CHANNEL
 
 broker = Broker()
 
@@ -21,7 +21,7 @@ def submit_image(image_path: str, source: str = "cli"):
         "topic": IMAGE_SUBMITTED,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "payload": {
-            "image_id": f"img_{uuid4().hex[:8]}",
+            "image_id": image_id,
             "path": str(path),
             "source": source
         }

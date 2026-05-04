@@ -1,38 +1,37 @@
 from datetime import datetime, timezone
 
 from app.broker import Broker
-from app.events import (
-    INFERENCE_EVENTS_CHANNEL,
-    ANNOTATION_EVENTS_CHANNEL,
-    ANNOTATION_STORED,
-)
+from app.events import INFERENCE_COMPLETED, ANNOTATION_STORED, is_valid_event
+from app.storage.mongo_client import MongoAnnotationStore
+
 
 broker = Broker()
-DOCUMENT_DB = {}
+store = MongoAnnotationStore()
+
 
 def handle_inference_completed(event):
+    if not is_valid_event(event):
+        print("Document Service: invalid event")
+        return
+
     print("Document Service received:", event)
 
     payload = event.get("payload", {})
     image_id = payload.get("image_id")
+    objects = payload.get("objects", [])
+    model_version = payload.get("model_version", "unknown")
 
     if not image_id:
-        print("Document Service: invalid event, missing image_id")
+        print("Document Service: missing image_id")
         return
 
-    if image_id in DOCUMENT_DB:
-        print(f"Document for {image_id} already exists. Skipping duplicate.")
-        return
+    result = store.store_annotation(
+        image_id=image_id,
+        objects=objects,
+        model_version=model_version
+    )
 
-    document = {
-        "image_id": image_id,
-        "objects": payload.get("objects", []),
-        "model_version": payload.get("model_version", "unknown"),
-        "status": "stored"
-    }
-
-    DOCUMENT_DB[image_id] = document
-    print("Stored document:", document)
+    print("Stored document in MongoDB Atlas:", result)
 
     new_event = {
         "event_id": f"evt_store_{image_id}",
@@ -41,13 +40,15 @@ def handle_inference_completed(event):
         "payload": {
             "image_id": image_id,
             "status": "stored",
-            "document_id": f"doc_{image_id}"
+            "document_id": result["document_id"],
+            "inserted": result["inserted"]
         }
     }
 
-    broker.publish(ANNOTATION_EVENTS_CHANNEL, new_event)
+    broker.publish(ANNOTATION_STORED, new_event)
     print("Document Service published:", new_event)
 
+
 def start():
-    broker.subscribe(INFERENCE_EVENTS_CHANNEL, handle_inference_completed)
-    print("Document Service is running and subscribed to inference_events...")
+    broker.subscribe(INFERENCE_COMPLETED, handle_inference_completed)
+    print("Document Service is running and subscribed to inference.completed...")
