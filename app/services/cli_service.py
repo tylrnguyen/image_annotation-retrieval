@@ -1,5 +1,5 @@
 from app.broker import Broker
-from app.events import IMAGE_SUBMITTED
+from app.events import IMAGE_SUBMITTED, IMAGE_EVENTS_CHANNEL
 from datetime import datetime, timezone
 
 broker = Broker()
@@ -16,5 +16,5 @@ def submit_image():
         }
     }
 
-    broker.publish("image_events", event)
+    broker.publish(IMAGE_EVENTS_CHANNEL, event)
     print("Image submitted:", event)
