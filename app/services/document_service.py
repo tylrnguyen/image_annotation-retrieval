@@ -1,8 +1,13 @@
-from app.broker import Broker
 from datetime import datetime, timezone
 
-broker = Broker()
+from app.broker import Broker
+from app.events import (
+    INFERENCE_EVENTS_CHANNEL,
+    ANNOTATION_EVENTS_CHANNEL,
+    ANNOTATION_STORED,
+)
 
+broker = Broker()
 DOCUMENT_DB = {}
 
 def handle_inference_completed(event):
@@ -30,8 +35,8 @@ def handle_inference_completed(event):
     print("Stored document:", document)
 
     new_event = {
-        "event_id": "evt_3",
-        "topic": "annotation.stored",
+        "event_id": f"evt_store_{image_id}",
+        "topic": ANNOTATION_STORED,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "payload": {
             "image_id": image_id,
@@ -40,9 +45,9 @@ def handle_inference_completed(event):
         }
     }
 
-    broker.publish("annotation_events", new_event)
+    broker.publish(ANNOTATION_EVENTS_CHANNEL, new_event)
     print("Document Service published:", new_event)
 
 def start():
-    broker.subscribe("inference_events", handle_inference_completed)
+    broker.subscribe(INFERENCE_EVENTS_CHANNEL, handle_inference_completed)
     print("Document Service is running and subscribed to inference_events...")

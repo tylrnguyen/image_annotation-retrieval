@@ -1,4 +1,5 @@
 from app.broker import Broker
+from app.events import IMAGE_SUBMITTED
 from datetime import datetime, timezone
 
 broker = Broker()
@@ -6,7 +7,7 @@ broker = Broker()
 def submit_image():
     event = {
         "event_id": "evt_1",
-        "topic": "image.submitted",
+        "topic": IMAGE_SUBMITTED,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "payload": {
             "image_id": "img_123",

@@ -1,5 +1,11 @@
-from app.broker import Broker
 from datetime import datetime, timezone
+
+from app.broker import Broker
+from app.events import (
+    IMAGE_EVENTS_CHANNEL,
+    INFERENCE_EVENTS_CHANNEL,
+    INFERENCE_COMPLETED,
+)
 
 broker = Broker()
 
@@ -14,8 +20,8 @@ def handle_image_submitted(event):
         return
 
     new_event = {
-        "event_id": "evt_2",
-        "topic": "inference.completed",
+        "event_id": f"evt_infer_{image_id}",
+        "topic": INFERENCE_COMPLETED,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "payload": {
             "image_id": image_id,
@@ -29,9 +35,9 @@ def handle_image_submitted(event):
         }
     }
 
-    broker.publish("inference_events", new_event)
+    broker.publish(INFERENCE_EVENTS_CHANNEL, new_event)
     print("Inference published:", new_event)
 
 def start():
-    broker.subscribe("image_events", handle_image_submitted)
+    broker.subscribe(IMAGE_EVENTS_CHANNEL, handle_image_submitted)
     print("Inference Service is running and subscribed to image_events...")
