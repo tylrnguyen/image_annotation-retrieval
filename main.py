@@ -5,6 +5,7 @@ from app.services.inference_service import start as start_inference
 from app.services.document_service import start as start_document
 from app.services.upload_service import submit_image
 from app.services.embedding_service import start as start_embedding
+from app.services.vector_index_service import start as start_vector_index
 
 def main():
     if len(sys.argv) < 2:
@@ -16,6 +17,7 @@ def main():
     start_inference()
     start_document()
     start_embedding()
+    start_vector_index()
 
     time.sleep(1)
 
