@@ -1,6 +1,6 @@
 # Image Annotation Retrieval
 
-[video demo](https://drive.google.com/drive/folders/1RZZA6uXFPBS2E0JVX3prvvzpQO4BbR5Q?usp=drive_link)
+[video demo](https://drive.google.com/drive/folders/1ZEolIidaFRVNBDfZ_PlysgSJknEDAJt2?usp=sharing)
 
 An event-driven image processing pipeline that turns an uploaded image into structured annotations, embeddings, and an in-memory vector index.
 
